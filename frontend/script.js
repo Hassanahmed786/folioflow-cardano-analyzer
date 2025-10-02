@@ -1,7 +1,10 @@
 // Configuration - API Keys (REPLACE WITH YOUR ACTUAL API KEYS)
 const CONFIG = {
     BLOCKFROST_API_KEY: 'previewAWg8QkDEATofoowLAW8Am5ZpiqCYSgS7', // Your Blockfrost API key
-    BACKEND_URL: 'http://localhost:5000', // Backend server URL
+    // Auto-detect backend URL for deployment
+    BACKEND_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:5000' 
+        : '/api', // Use relative path for Vercel deployment
     BLOCKFROST_BASE_URL: 'https://cardano-preview.blockfrost.io/api/v0'
 };
 

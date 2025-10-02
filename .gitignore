@@ -83,3 +83,7 @@ coverage.xml
 *.bak
 *.backup
 *~
+
+# Vercel
+.vercel
+*.vercel.json.local

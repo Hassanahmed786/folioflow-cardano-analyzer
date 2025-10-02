@@ -1,0 +1,28 @@
+{
+  "name": "folioflow-cardano-analyzer",
+  "version": "1.0.0",
+  "description": "AI-Powered Cardano Portfolio Analyzer with Azure OpenAI Integration",
+  "main": "api/index.py",
+  "scripts": {
+    "dev": "python backend/app.py",
+    "start": "python api/index.py",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "cardano",
+    "blockchain",
+    "portfolio",
+    "ai",
+    "azure-openai",
+    "vercel"
+  ],
+  "author": "FolioFlow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hassanahmed786/folioflow-cardano-analyzer.git"
+  },
+  "engines": {
+    "python": "3.9.x"
+  }
+}
