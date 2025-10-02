@@ -54,54 +54,7 @@ def health_check():
         "status": "healthy",
         "service": "FolioFlow AI Backend",
         "version": "1.0.0",
-        "timestamp": datetime.now().isoformat(),
-        "demo_mode": True,
-        "features": ["ai_analysis", "masumi_integration", "portfolio_insights"]
-    })
-
-# Demo endpoints for hackathon presentation
-@app.route('/demo/stats', methods=['GET'])
-def demo_stats():
-    """Demo statistics for presentation"""
-    return jsonify({
-        "total_analyses_performed": 1247,
-        "total_revenue_ada": 6235,
-        "active_users": 342,
-        "uptime_percentage": 99.9,
-        "average_analysis_time": "45 seconds",
-        "successful_payments": 856,
-        "masumi_agents_connected": 23
-    })
-
-@app.route('/masumi/agent/info', methods=['GET'])
-def masumi_agent_info():
-    """Masumi Network agent information - MIP-003 compliant"""
-    return jsonify({
-        "name": "FolioFlow Portfolio Analyzer",
-        "version": "1.0.0",
-        "description": "AI-powered Cardano portfolio analysis with tax intelligence",
-        "price_lovelace": "5000000",  # 5 ADA
-        "status": "active",
-        "capabilities": [
-            "portfolio_analysis",
-            "transaction_categorization", 
-            "tax_intelligence",
-            "risk_assessment",
-            "defi_analytics"
-        ],
-        "demo_mode": True,
-        "estimated_response_time": "30-60 seconds"
-    })
-
-@app.route('/masumi/agent/demo-payment', methods=['POST'])
-def demo_payment_verification():
-    """Demo payment verification for hackathon presentation"""
-    return jsonify({
-        "payment_verified": True,
-        "amount_ada": 5,
-        "transaction_id": "demo_" + datetime.now().strftime("%Y%m%d_%H%M%S"),
-        "status": "confirmed",
-        "message": "Payment verified through Masumi Network (demo mode)"
+        "timestamp": datetime.now().isoformat()
     })
 
 @app.route('/analyze', methods=['POST'])
@@ -388,22 +341,13 @@ if __name__ == '__main__':
     print(f"   - Azure OpenAI Endpoint: {AZURE_OPENAI_ENDPOINT if azure_openai_configured else '❌ Not configured'}")
     print(f"   - Azure OpenAI Deployment: {AZURE_OPENAI_DEPLOYMENT_NAME if azure_openai_configured else '❌ Not configured'}")
     print(f"   - AI Service: {'✅ Azure OpenAI Ready' if azure_openai_configured else '❌ Not configured'}")
-    
-    # Get port from environment variable for deployment platforms
-    port = int(os.environ.get('PORT', 5000))
-    
-    print(f"\n🌐 Server starting on http://localhost:{port}")
+    print("\n🌐 Server starting on http://localhost:5000")
     print("📡 Ready to receive transaction analysis requests at /analyze")
     print("\n⚠️  Remember to:")
     print("   1. Get an API key from Azure OpenAI service")
-    print("   2. Replace YOUR_AZURE_OPENAI_API_KEY_HERE with your Azure OpenAI API key") 
+    print("   2. Replace YOUR_AZURE_OPENAI_API_KEY_HERE with your Azure OpenAI API key")
     print("   3. Replace YOUR_AZURE_OPENAI_ENDPOINT_HERE with your Azure OpenAI endpoint")
     print("   4. Replace YOUR_DEPLOYMENT_NAME_HERE with your deployment name")
-    print("   5. Install required dependencies: pip install flask flask-cors requests")
-    print("   6. Configure CORS settings for production deployment")
-    
-    # Run the Flask app
-    app.run(host='0.0.0.0', port=port, debug=False)
     print("   5. Install required dependencies: pip install flask flask-cors requests")
     print("   6. Configure CORS settings for production deployment")
     
