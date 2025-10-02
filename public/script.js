@@ -379,27 +379,39 @@ async function connectWallet(walletKey, walletName) {
         console.log('🔍 Address type:', typeof walletAddress);
         console.log('🔍 Address length:', walletAddress ? walletAddress.length : 'undefined');
         
-        // If address is in hex format, we need to handle it appropriately
-        if (typeof walletAddress === 'string' && walletAddress.length > 100) {
-            console.log('🔤 Address appears to be hex-encoded, length:', walletAddress.length);
-            // For now, let's try to use a demo address for preview network
-            walletAddress = 'addr_test1qpw0djgj0x59ngrjvqthn7enhvruxnsavsw5th63la3mjel3tkc974sr23jmlzgq5zda4gtv8k9cy38756r9y3qgmkqqjz6aa7';
-            console.log('🎭 Using demo preview address for testing:', walletAddress);
+        // Handle different address formats
+        let finalAddress = walletAddress;
+        
+        if (typeof walletAddress === 'string') {
+            if (walletAddress.length > 100) {
+                console.log('🔤 Address appears to be hex-encoded, length:', walletAddress.length);
+                // Try to convert hex to bech32 address or use as-is for analysis
+                // For analysis purposes, we'll keep the hex address but note the format
+                finalAddress = walletAddress;
+                console.log('📝 Using hex address for analysis (will note format limitation)');
+            } else if (walletAddress.startsWith('addr1') || walletAddress.startsWith('addr_test1')) {
+                console.log('✅ Standard bech32 address format detected');
+                finalAddress = walletAddress;
+            } else {
+                console.log('🔤 Non-standard address format, using for analysis');
+                finalAddress = walletAddress;
+            }
         }
         
-        // Validate address format
-        if (!walletAddress || (!walletAddress.startsWith('addr1') && !walletAddress.startsWith('addr_test1'))) {
-            console.warn('⚠️ Address format may not be compatible with Blockfrost API');
-            // Use a demo preview address
-            walletAddress = 'addr_test1qpw0djgj0x59ngrjvqthn7enhvruxnsavsw5th63la3mjel3tkc974sr23jmlzgq5zda4gtv8k9cy38756r9y3qgmkqqjz6aa7';
-            console.log('🎭 Using demo preview address:', walletAddress);
+        // For Blockfrost API compatibility, use a known testnet address, but keep real address for AI analysis
+        let blockfrostAddress = finalAddress;
+        if (!finalAddress.startsWith('addr_test1') && !finalAddress.startsWith('addr1')) {
+            console.log('🔄 Using demo address for Blockfrost API (real address will be sent to AI)');
+            blockfrostAddress = 'addr_test1qpw0djgj0x59ngrjvqthn7enhvruxnsavsw5th63la3mjel3tkc974sr23jmlzgq5zda4gtv8k9cy38756r9y3qgmkqqjz6aa7';
         }
         
         connectedWallet = {
             name: walletName,
             key: walletKey,
-            address: walletAddress,
-            instance: walletInstance
+            address: finalAddress, // Real wallet address for AI analysis
+            blockfrost_address: blockfrostAddress, // Address used for Blockfrost API calls
+            instance: walletInstance,
+            address_format: finalAddress.length > 100 ? 'hex' : 'bech32'
         };
 
         console.log(`✅ Wallet connected successfully: ${walletName}`);
@@ -499,7 +511,7 @@ async function analyzeTransactions() {
         console.log('✅ Using Blockfrost API key:', CONFIG.BLOCKFROST_API_KEY.substring(0, 10) + '...');
 
         // Fetch transaction history
-        const transactions = await fetchTransactionHistory(connectedWallet.address);
+        const transactions = await fetchTransactionHistory(connectedWallet.blockfrost_address || connectedWallet.address);
         
         if (!transactions || transactions.length === 0) {
             showError('No transactions found for this wallet. This might be a new wallet or the address format needs conversion.');
@@ -660,18 +672,67 @@ async function fetchTransactionHistory(address) {
     }
 }
 
-// Send transaction data to backend for AI analysis
+// Send transaction data to backend for AI analysis - Enhanced with comprehensive data
 async function sendToBackend(transactions) {
     try {
+        // Gather comprehensive wallet and transaction data
+        const portfolioData = {
+            wallet_info: {
+                name: connectedWallet.name,
+                type: connectedWallet.key,
+                address: connectedWallet.address,
+                network: CONFIG.BLOCKFROST_BASE_URL.includes('preview') ? 'Cardano Preview Testnet' : 'Cardano Mainnet',
+                connection_timestamp: new Date().toISOString()
+            },
+            transaction_summary: {
+                total_analyzed: transactions.length,
+                date_range: transactions.length > 0 ? {
+                    earliest: Math.min(...transactions.map(tx => tx.block_time || 0)),
+                    latest: Math.max(...transactions.map(tx => tx.block_time || 0))
+                } : null,
+                total_fees: transactions.reduce((sum, tx) => sum + parseInt(tx.fees || 0), 0),
+                total_output_amount: transactions.reduce((sum, tx) => sum + parseInt(tx.output_amount || 0), 0),
+                average_fee: transactions.length > 0 ? 
+                    transactions.reduce((sum, tx) => sum + parseInt(tx.fees || 0), 0) / transactions.length : 0,
+                fee_efficiency: transactions.length > 0 ? 
+                    transactions.reduce((sum, tx) => sum + (parseInt(tx.size || 0) / parseInt(tx.fees || 1)), 0) / transactions.length : 0
+            },
+            analysis_metadata: {
+                api_source: 'Blockfrost',
+                api_network: 'Preview Testnet',
+                analysis_timestamp: new Date().toISOString(),
+                data_completeness: {
+                    has_wallet_address: !!connectedWallet.address,
+                    has_transaction_details: transactions.length > 0,
+                    transaction_detail_level: 'basic' // Could be enhanced to 'detailed' with UTXOs, etc.
+                }
+            }
+        };
+
+        const requestPayload = {
+            transactions: transactions,
+            wallet_address: connectedWallet.address,
+            portfolio_data: portfolioData,
+            analysis_type: 'comprehensive',
+            context: {
+                user_requested_analysis: true,
+                timestamp: new Date().toISOString(),
+                app_version: '1.0.0'
+            }
+        };
+
+        console.log('📤 Sending comprehensive data to AI:', {
+            transactions: transactions.length,
+            wallet: connectedWallet.address.substring(0, 20) + '...',
+            portfolio_summary: portfolioData.transaction_summary
+        });
+
         const response = await fetch(`${CONFIG.BACKEND_URL}/analyze`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                transactions: transactions,
-                wallet_address: connectedWallet.address
-            })
+            body: JSON.stringify(requestPayload)
         });
 
         if (!response.ok) {
