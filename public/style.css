@@ -1413,3 +1413,89 @@ footer {
         font-size: 0.9rem;
     }
 }
+
+/* Full-width insight card for AI analysis */
+.insight-card.full-width {
+    grid-column: 1 / -1;
+    max-width: none;
+}
+
+/* Markdown styling for AI analysis */
+.analysis-markdown {
+    color: #e2e8f0;
+    line-height: 1.7;
+}
+
+.analysis-markdown h1,
+.analysis-markdown h2,
+.analysis-markdown h3 {
+    color: #00d4ff;
+    margin: 20px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.analysis-markdown h1 {
+    font-size: 1.8rem;
+    margin-top: 0;
+}
+
+.analysis-markdown h2 {
+    font-size: 1.5rem;
+}
+
+.analysis-markdown h3 {
+    font-size: 1.3rem;
+}
+
+.analysis-markdown p {
+    margin: 12px 0;
+    color: #cbd5e0;
+}
+
+.analysis-markdown ul,
+.analysis-markdown ol {
+    margin: 15px 0 15px 25px;
+}
+
+.analysis-markdown li {
+    margin: 8px 0;
+    color: #e2e8f0;
+}
+
+.analysis-markdown strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.analysis-markdown em {
+    color: #00d4ff;
+    font-style: italic;
+}
+
+.analysis-markdown code {
+    background: rgba(0, 212, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #00d4ff;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    .insight-card.full-width {
+        grid-column: 1;
+    }
+    
+    .analysis-markdown h1 {
+        font-size: 1.5rem;
+    }
+    
+    .analysis-markdown h2 {
+        font-size: 1.3rem;
+    }
+    
+    .analysis-markdown h3 {
+        font-size: 1.2rem;
+    }
+}

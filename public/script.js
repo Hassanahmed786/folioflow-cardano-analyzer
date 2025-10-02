@@ -679,15 +679,15 @@ function displayResults(results) {
     }
 }
 
-// Create enhanced results layout
+// Create enhanced results layout - updated to handle actual API response
 function createEnhancedResultsLayout(results) {
-    const timestamp = new Date().toLocaleString();
+    const timestamp = new Date(results.timestamp || new Date()).toLocaleString();
     
     return `
         <div class="results-header">
             <div class="results-title">
                 <h2>🎯 Portfolio Analysis Complete</h2>
-                <p class="analysis-timestamp">Generated on ${timestamp}</p>
+                <p class="analysis-timestamp">Generated on ${timestamp} • ${results.ai_service || 'AI Service'}</p>
             </div>
             <div class="header-actions">
                 <button class="secondary-btn" onclick="exportResults()">📊 Export</button>
@@ -731,110 +731,158 @@ function createPortfolioHealthCard(results) {
     `;
 }
 
-// Create portfolio overview card
+// Create portfolio overview card - updated to use actual API data
 function createPortfolioOverviewCard(results) {
-    const summary = results.portfolio_summary || {};
-    const accountAssessment = summary.account_type_assessment || 'Unknown';
-    const truncatedAssessment = truncateText(accountAssessment, 100);
-    const needsReadMore = accountAssessment.length > 100;
+    const walletAddress = results.wallet_address || 'Unknown';
+    const transactionsAnalyzed = results.transactions_analyzed || 0;
+    const aiService = results.ai_service || 'AI Service';
+    const status = results.status || 'completed';
     
     return `
         <div class="insight-card" style="opacity: 0; transform: translateY(20px); transition: all 0.5s ease;">
             <span class="card-icon">📊</span>
             <h3>Portfolio Overview</h3>
             <div class="overview-stats">
-                <div class="stat-row expandable-row">
-                    <span class="stat-label">Account Type Assessment:</span>
-                    <div class="stat-value-container">
-                        <span class="stat-value expandable-text" data-full-text="${accountAssessment}">${truncatedAssessment}</span>
-                        ${needsReadMore ? '<button class="read-more-btn" onclick="toggleReadMore(this)">Read More</button>' : ''}
-                    </div>
+                <div class="stat-row">
+                    <span class="stat-label">Wallet Address:</span>
+                    <span class="stat-value" style="color: #00d4ff">${walletAddress === 'Unknown' ? 'Connected Wallet' : walletAddress.substring(0, 20) + '...'}</span>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">Total Fees Paid:</span>
-                    <span class="stat-value" style="color: #ff6b6b">${summary.total_fees_paid || 'N/A'}</span>
+                    <span class="stat-label">Transactions Analyzed:</span>
+                    <span class="stat-value" style="color: #10b981">${transactionsAnalyzed}</span>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">Total Transactions:</span>
-                    <span class="stat-value" style="color: #00d4ff">${summary.total_transactions || 'N/A'}</span>
+                    <span class="stat-label">AI Service:</span>
+                    <span class="stat-value" style="color: #8b5cf6">${aiService}</span>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">Transaction Frequency:</span>
-                    <span class="stat-value">${truncateText(summary.transaction_frequency || 'N/A', 80)}</span>
+                    <span class="stat-label">Analysis Status:</span>
+                    <span class="stat-value" style="color: #f59e0b">${status === 'ai_analysis_complete' ? 'Complete' : status}</span>
                 </div>
             </div>
         </div>
     `;
 }
 
-// Create transaction patterns card
+// Create transaction patterns card - updated for actual API data
 function createTransactionPatternsCard(results) {
-    const analysis = results.transaction_analysis || [];
+    const transactionsAnalyzed = results.transactions_analyzed || 0;
+    const walletAddress = results.wallet_address || 'Unknown';
+    const timestamp = results.timestamp || new Date().toISOString();
     
-    let patternsHtml = '';
-    if (Array.isArray(analysis) && analysis.length > 0) {
-        patternsHtml = analysis.map((item, index) => {
-            const description = item.description || 'No description';
-            const truncatedDesc = truncateText(description, 120);
-            const needsReadMore = description.length > 120;
-            
-            return `
-                <div class="pattern-item">
-                    <div class="pattern-header">
-                        <span class="pattern-category">${item.category || 'Unknown'}</span>
-                        <span class="pattern-count">${item.count || 0}</span>
-                    </div>
-                    <div class="pattern-description expandable-text" data-full-text="${description}">${truncatedDesc}</div>
-                    ${needsReadMore ? '<button class="read-more-btn" onclick="toggleReadMore(this)">Read More</button>' : ''}
-                    <div class="pattern-total">${item.total_value || 'No value'}</div>
-                </div>
-            `;
-        }).join('');
-    } else {
-        patternsHtml = '<div class="no-data">No transaction patterns identified</div>';
-    }
+    // Extract patterns from the analysis text if available
+    const analysis = results.analysis || '';
+    const hasPatterns = analysis.includes('Transaction Patterns') || analysis.includes('transaction');
     
     return `
         <div class="insight-card" style="opacity: 0; transform: translateY(20px); transition: all 0.5s ease;">
             <span class="card-icon">🔍</span>
-            <h3>Transaction Patterns</h3>
+            <h3>Transaction Analysis</h3>
             <div class="patterns-list">
-                ${patternsHtml}
+                <div class="pattern-item">
+                    <div class="pattern-header">
+                        <span class="pattern-category">Total Analyzed</span>
+                        <span class="pattern-count">${transactionsAnalyzed}</span>
+                    </div>
+                    <div class="pattern-description">Transactions processed for comprehensive analysis</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-header">
+                        <span class="pattern-category">Analysis Status</span>
+                        <span class="pattern-count">${results.status === 'ai_analysis_complete' ? '✅' : '⏳'}</span>
+                    </div>
+                    <div class="pattern-description">${results.status === 'ai_analysis_complete' ? 'Complete AI analysis with detailed insights' : 'Analysis in progress'}</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-header">
+                        <span class="pattern-category">AI Service</span>
+                        <span class="pattern-count">🤖</span>
+                    </div>
+                    <div class="pattern-description">${results.ai_service || 'AI Analysis'} powered insights</div>
+                </div>
+                ${hasPatterns ? 
+                    `<div class="pattern-item">
+                        <div class="pattern-header">
+                            <span class="pattern-category">Detailed Patterns</span>
+                            <span class="pattern-count">�</span>
+                        </div>
+                        <div class="pattern-description">View complete analysis below for transaction patterns and insights</div>
+                    </div>` : ''
+                }
             </div>
         </div>
     `;
 }
 
-// Create insights card
+// Create insights card - updated to show actual AI analysis
 function createInsightsCard(results) {
-    const insights = results.insights || {};
+    const analysis = results.analysis || 'No analysis available';
     
-    const createInsightSection = (title, content, icon) => {
-        const text = content || `No ${title.toLowerCase()} available`;
-        const truncatedText = truncateText(text, 150);
-        const needsReadMore = text.length > 150;
-        
-        return `
-            <div class="insight-section">
-                <h4>${icon} ${title}</h4>
-                <p class="expandable-text" data-full-text="${text}">${truncatedText}</p>
-                ${needsReadMore ? '<button class="read-more-btn" onclick="toggleReadMore(this)">Read More</button>' : ''}
-            </div>
-        `;
-    };
+    // Parse sections from the markdown analysis
+    const sections = parseAnalysisSections(analysis);
     
     return `
-        <div class="insight-card" style="opacity: 0; transform: translateY(20px); transition: all 0.5s ease;">
+        <div class="insight-card full-width" style="opacity: 0; transform: translateY(20px); transition: all 0.5s ease;">
             <span class="card-icon">💡</span>
-            <h3>AI Insights & Recommendations</h3>
+            <h3>AI Analysis & Recommendations</h3>
             <div class="insights-content">
-                ${createInsightSection('Spending Patterns', insights.spending_patterns, '💰')}
-                ${createInsightSection('Tax Considerations', insights.tax_considerations, '📊')}
-                ${createInsightSection('Recommendations', insights.recommendations, '🎯')}
-                ${createInsightSection('Risk Assessment', insights.risk_assessment, '⚠️')}
+                <div class="analysis-markdown">
+                    ${formatAnalysisForDisplay(analysis)}
+                </div>
             </div>
         </div>
     `;
+}
+
+// Parse analysis sections from markdown
+function parseAnalysisSections(analysis) {
+    const sections = {};
+    const lines = analysis.split('\n');
+    let currentSection = '';
+    let currentContent = [];
+    
+    for (const line of lines) {
+        if (line.startsWith('##') || line.startsWith('#')) {
+            if (currentSection && currentContent.length > 0) {
+                sections[currentSection] = currentContent.join('\n');
+            }
+            currentSection = line.replace(/^#+\s*/, '').trim();
+            currentContent = [];
+        } else if (currentSection) {
+            currentContent.push(line);
+        }
+    }
+    
+    if (currentSection && currentContent.length > 0) {
+        sections[currentSection] = currentContent.join('\n');
+    }
+    
+    return sections;
+}
+
+// Format analysis for HTML display
+function formatAnalysisForDisplay(analysis) {
+    // Convert markdown to basic HTML
+    let formatted = analysis
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^- (.*$)/gim, '<li>$1</li>')
+        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(?!<[h|l|p])/gm, '<p>')
+        .replace(/(?<!>)$/gm, '</p>');
+    
+    // Wrap consecutive <li> items in <ul>
+    formatted = formatted.replace(/(<li>.*?<\/li>)(?:\s*<li>.*?<\/li>)*/g, '<ul>$&</ul>');
+    formatted = formatted.replace(/<\/li>\s*<li>/g, '</li><li>');
+    
+    // Clean up empty paragraphs
+    formatted = formatted.replace(/<p><\/p>/g, '');
+    
+    return formatted;
 }
 
 // Calculate portfolio health score
