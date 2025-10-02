@@ -1,10 +1,130 @@
-# 🚀 FolioFlow - AI-Powered Cardano Portfolio Analyzer
+# 🌟 FolioFlow - AI-Powered Cardano Portfolio Analyzer
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Cardano](https://img.shields.io/badge/Cardano-Portfolio%20Analysis-blue)](https://cardano.org/)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://vercel.com)
 
-> **The most advanced AI-powered portfolio analysis tool for Cardano wallets**
+> **Professional AI-powered portfolio analysis for Cardano wallets**
+
+## 🚀 **Live Demo**
+**[Try FolioFlow Live](https://folioflow-cardano-analyzer-2-7gmdozeyd.vercel.app/)** - Deployed on Vercel
+
+---
+
+## ✨ **Features**
+
+- 🧠 **AI Analysis** - Azure OpenAI powered insights
+- 💼 **Portfolio Overview** - Complete asset and transaction analysis
+- 🔗 **Multi-Wallet Support** - Lace, Nami, Eternl, Flint, Typhon, GeroWallet, CCVault
+- 📊 **Real-time Data** - Blockfrost API integration
+- 📱 **Responsive Design** - Works on all devices
+- 🔒 **Secure** - No private keys stored, read-only access
+
+---
+
+## 🏗️ **Project Structure**
+
+```
+folioflow-cardano-analyzer/
+├── api/                    # Vercel Serverless Functions
+│   ├── analyze.py         # Portfolio analysis endpoint  
+│   └── index.py           # API health check
+├── public/                # Static frontend files
+│   ├── index.html         # Main application
+│   ├── script.js          # Core functionality
+│   ├── style.css          # Styling
+│   └── masumi-integration.js # Wallet integration
+├── config/                # Configuration
+├── vercel.json           # Deployment config
+└── README.md             # This file
+```
+
+---
+
+## 🚀 **Deployment**
+
+### **Option 1: One-Click Deploy**
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Hassanahmed786/folioflow-cardano-analyzer)
+
+### **Option 2: Local Development**
+```bash
+# Clone and setup
+git clone https://github.com/Hassanahmed786/folioflow-cardano-analyzer.git
+cd folioflow-cardano-analyzer
+pip install -r requirements.txt
+
+# Configure API keys (optional for demo)
+cp config/masumi_config_template.py config/masumi_config.py
+
+# Run locally  
+python -m http.server 8000 --directory public
+# Visit http://localhost:8000
+```
+
+---
+
+## ⚙️ **Configuration**
+
+### **Required for Full AI Analysis**
+Add these environment variables in Vercel dashboard:
+
+| Variable | Purpose |
+|----------|---------|
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL |
+| `AZURE_OPENAI_API_VERSION` | API version (e.g. `2024-08-01-preview`) |
+| `AZURE_OPENAI_DEPLOYMENT_NAME` | Deployment name |
+
+**Note**: App works in demo mode without configuration.
+
+---
+
+## 📖 **How to Use**
+
+1. **Visit the app** - Live demo or deploy your own
+2. **Connect wallet** - Choose from supported Cardano wallets
+3. **Analyze portfolio** - Click "Analyze Portfolio" button
+4. **Review insights** - Get AI-powered recommendations
+
+---
+
+## 🛠️ **Technology**
+
+- **Frontend**: Vanilla JavaScript, CSS3, HTML5
+- **Backend**: Python serverless functions
+- **AI**: Azure OpenAI (GPT models)
+- **Blockchain**: Blockfrost API
+- **Deployment**: Vercel platform
+- **Wallets**: CIP-30 standard
+
+---
+
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+---
+
+## 📄 **License**
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 **Acknowledgments**
+
+- **Azure OpenAI** - AI analysis engine
+- **Blockfrost** - Cardano blockchain API  
+- **Vercel** - Deployment platform
+- **Cardano Community** - Wallet standards
+
+---
+
+**Made with ❤️ for the Cardano Community**
 
 ## ✨ Key Features
 
