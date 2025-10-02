@@ -140,9 +140,14 @@ def generate_ai_analysis(transactions, wallet_address):
 
 def call_azure_openai(prompt):
     """
-    Make API call to Azure OpenAI
+    Make API call to Azure OpenAI with improved error handling
     """
     try:
+        # Validate prompt length to prevent token overflow
+        if len(prompt) > 100000:  # Approximately 25k tokens
+            print(f"⚠️ Prompt too long ({len(prompt)} chars), truncating...")
+            prompt = prompt[:100000] + "\n\n[Content truncated due to length]"
+        
         # Construct Azure OpenAI endpoint URL
         endpoint_url = f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_DEPLOYMENT_NAME}/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
         print(f"🔗 Azure OpenAI URL: {endpoint_url}")
@@ -156,20 +161,22 @@ def call_azure_openai(prompt):
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are an expert blockchain accountant specializing in Cardano transaction analysis. Provide detailed, accurate financial insights in a structured format."
+                    "content": "You are an expert Cardano blockchain analyst. Provide concise, structured financial insights."
                 },
                 {
                     "role": "user",
                     "content": prompt
                 }
             ],
-            "max_tokens": 4000,  # Increased from 2000
+            "max_tokens": 4000,
             "temperature": 0.3,
-            "top_p": 0.9
+            "top_p": 0.9,
+            "frequency_penalty": 0.1,
+            "presence_penalty": 0.1
         }
         
-        print(f"📤 Sending request to Azure OpenAI...")
-        response = requests.post(endpoint_url, headers=headers, json=data, timeout=30)
+        print(f"📤 Sending request to Azure OpenAI... (timeout: 120s)")
+        response = requests.post(endpoint_url, headers=headers, json=data, timeout=120)
         print(f"📨 Response status: {response.status_code}")
         
         if response.status_code != 200:
@@ -190,10 +197,22 @@ def call_azure_openai(prompt):
         return content
         
     except requests.exceptions.Timeout:
-        raise Exception("Azure OpenAI request timed out")
+        print("⏰ Azure OpenAI request timed out after 120 seconds")
+        raise Exception("Azure OpenAI request timed out - the request took too long to complete")
+    except requests.exceptions.ConnectionError:
+        print("🔌 Azure OpenAI connection error")
+        raise Exception("Azure OpenAI connection error - please check your internet connection")
     except requests.exceptions.RequestException as e:
+        print(f"🌐 Azure OpenAI request failed: {str(e)}")
         raise Exception(f"Azure OpenAI request failed: {str(e)}")
+    except json.JSONDecodeError as e:
+        print(f"📄 JSON decode error: {str(e)}")
+        raise Exception(f"Invalid JSON response from Azure OpenAI: {str(e)}")
+    except KeyError as e:
+        print(f"🔑 Missing key in response: {str(e)}")
+        raise Exception(f"Unexpected response format from Azure OpenAI: missing {str(e)}")
     except Exception as e:
+        print(f"❌ Unexpected Azure OpenAI error: {str(e)}")
         raise Exception(f"Azure OpenAI error: {str(e)}")
 
 def prepare_transaction_data(transactions):
