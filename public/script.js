@@ -543,6 +543,28 @@ async function fetchTransactionHistory(address) {
         console.log('🔗 Using Blockfrost URL:', CONFIG.BLOCKFROST_BASE_URL);
         console.log('🔑 Using API key:', CONFIG.BLOCKFROST_API_KEY.substring(0, 10) + '...');
         
+        // First, check API usage metrics
+        try {
+            const metricsResponse = await fetch(`${CONFIG.BLOCKFROST_BASE_URL}/metrics`, {
+                headers: {
+                    'project_id': CONFIG.BLOCKFROST_API_KEY
+                }
+            });
+            
+            if (metricsResponse.ok) {
+                const metrics = await metricsResponse.json();
+                console.log('📊 Blockfrost API usage today:', metrics);
+                
+                // Check if we're approaching limits (free tier is typically 100,000 requests/day)
+                const todayUsage = metrics[metrics.length - 1]?.calls || 0;
+                if (todayUsage > 90000) {
+                    console.warn('⚠️ High API usage detected:', todayUsage, 'calls today');
+                }
+            }
+        } catch (error) {
+            console.warn('Could not fetch API metrics:', error);
+        }
+        
         // First, get address transactions
         const apiUrl = `${CONFIG.BLOCKFROST_BASE_URL}/addresses/${address}/transactions?count=50&order=desc`;
         console.log('📞 API call URL:', apiUrl);
@@ -554,6 +576,7 @@ async function fetchTransactionHistory(address) {
         });
         
         console.log('📨 Response status:', txResponse.status);
+        console.log('📨 Response headers:', Object.fromEntries(txResponse.headers.entries()));
         
         if (!txResponse.ok) {
             // Get the error response body for better debugging
@@ -561,11 +584,13 @@ async function fetchTransactionHistory(address) {
             console.error('❌ Blockfrost error response:', errorBody);
             
             if (txResponse.status === 403) {
-                throw new Error('Invalid Blockfrost API key. Please check your configuration.');
+                throw new Error('Invalid Blockfrost API key or daily limit exceeded. Please check your configuration.');
             } else if (txResponse.status === 404) {
                 throw new Error('Address not found or has no transactions.');
             } else if (txResponse.status === 400) {
                 throw new Error(`Invalid address format or bad request. Address: ${address}. Error: ${errorBody}`);
+            } else if (txResponse.status === 429) {
+                throw new Error('Rate limit exceeded. Please wait a moment and try again.');
             } else {
                 throw new Error(`Blockfrost API error: ${txResponse.status} - ${errorBody}`);
             }
@@ -575,23 +600,27 @@ async function fetchTransactionHistory(address) {
         console.log(`📊 Found ${txList.length} transactions`);
         
         if (txList.length === 0) {
+            console.log('ℹ️ No transactions found for this address');
             return [];
         }
         
         // Get detailed info for recent transactions (limit to 20 for performance)
         const recentTxs = txList.slice(0, 20);
         const transactions = [];
+        let apiCallCount = 1; // We already made one call above
         
         for (let i = 0; i < recentTxs.length; i++) {
             try {
                 const txHash = recentTxs[i].tx_hash;
-                console.log(`📄 Fetching details for transaction ${i + 1}/${recentTxs.length}`);
+                console.log(`📄 Fetching details for transaction ${i + 1}/${recentTxs.length} (API calls: ${apiCallCount + 1})`);
                 
                 const txDetailResponse = await fetch(`${CONFIG.BLOCKFROST_BASE_URL}/txs/${txHash}`, {
                     headers: {
                         'project_id': CONFIG.BLOCKFROST_API_KEY
                     }
                 });
+                
+                apiCallCount++;
                 
                 if (txDetailResponse.ok) {
                     const txDetail = await txDetailResponse.json();
@@ -605,6 +634,12 @@ async function fetchTransactionHistory(address) {
                         slot: txDetail.slot,
                         index: txDetail.index
                     });
+                } else {
+                    console.warn(`Failed to fetch transaction ${txHash}:`, txDetailResponse.status);
+                    if (txDetailResponse.status === 429) {
+                        console.warn('Rate limit hit, stopping transaction details fetch');
+                        break;
+                    }
                 }
                 
                 // Add small delay to avoid rate limiting
@@ -616,7 +651,7 @@ async function fetchTransactionHistory(address) {
             }
         }
         
-        console.log(`✅ Successfully fetched ${transactions.length} transaction details`);
+        console.log(`✅ Successfully fetched ${transactions.length} transaction details using ${apiCallCount} API calls`);
         return transactions;
         
     } catch (error) {
