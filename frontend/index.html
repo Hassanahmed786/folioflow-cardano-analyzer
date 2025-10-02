@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>FolioFlow - Cardano Portfolio Analytics</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Pure CIP-30 Implementation - No external dependencies -->
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>FolioFlow</h1>
+                    <div class="beta-badge">BETA</div>
+                </div>
+                <p class="tagline">Next-Generation AI-Powered Cardano Portfolio Analytics & Tax Intelligence</p>
+                <div class="unique-features">
+                    <span class="feature-badge">🤖 AI-Driven Insights</span>
+                    <span class="feature-badge">📊 Real-Time Analytics</span>
+                    <span class="feature-badge">🔒 Privacy-First</span>
+                    <span class="feature-badge">⚡ Instant Analysis</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Initial State - Wallet Connection -->
+            <div id="wallet-section" class="section">
+                <div class="wallet-card">
+                    <div class="card-header">
+                        <h2>🚀 Connect Your Cardano Wallet</h2>
+                        <div class="security-badge">🔒 Bank-Grade Security</div>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">✨ <strong>Smart Contract Analysis:</strong> Deep dive into your DeFi interactions</div>
+                        <div class="feature-item">📈 <strong>Portfolio Tracking:</strong> Real-time ADA and native token valuations</div>
+                        <div class="feature-item">🧾 <strong>Tax Intelligence:</strong> Automated categorization for tax reporting</div>
+                        <div class="feature-item">⚡ <strong>Instant Insights:</strong> AI-powered recommendations in seconds</div>
+                    </div>
+                    <p class="connect-description">Experience the future of Cardano portfolio management. Our advanced AI analyzes your transaction patterns, identifies optimization opportunities, and provides actionable insights for better financial decisions.</p>
+                    <button id="connect-wallet-btn" class="primary-btn">
+                        <span class="btn-icon">🔗</span>
+                        Connect Wallet Securely
+                    </button>
+                    <div class="supported-wallets">
+                        <p>Supports: Lace • Nami • Eternl • Flint • Typhon • GeroWallet • CCVault</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connected State - Wallet Info and Analysis -->
+            <div id="connected-section" class="section hidden">
+                <div class="wallet-info">
+                    <div class="wallet-status">
+                        <span class="status-indicator connected"></span>
+                        <span>Connected: <span id="wallet-address"></span></span>
+                        <button id="disconnect-btn" class="disconnect-btn">Disconnect</button>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <h2>🔬 Advanced Transaction Analysis</h2>
+                    <div class="analysis-features">
+                        <div class="analysis-grid">
+                            <div class="analysis-item">
+                                <div class="icon">🧠</div>
+                                <h4>AI Pattern Recognition</h4>
+                                <p>Machine learning algorithms identify spending patterns, investment strategies, and potential optimizations</p>
+                            </div>
+                            <div class="analysis-item">
+                                <div class="icon">📊</div>
+                                <h4>Portfolio Health Score</h4>
+                                <p>Comprehensive risk assessment and diversification analysis across your Cardano holdings</p>
+                            </div>
+                            <div class="analysis-item">
+                                <div class="icon">💰</div>
+                                <h4>Tax Optimization</h4>
+                                <p>Smart categorization for tax reporting with potential deduction identification</p>
+                            </div>
+                            <div class="analysis-item">
+                                <div class="icon">⚡</div>
+                                <h4>Real-Time Insights</h4>
+                                <p>Live market data integration for accurate portfolio valuation and performance metrics</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="analyze-btn" class="primary-btn">
+                        <span class="btn-icon">🔍</span>
+                        Start Deep Analysis
+                    </button>
+                    <div class="analysis-stats">
+                        <span class="stat">⚡ Analysis in <2 seconds</span>
+                        <span class="stat">🎯 99.7% accuracy</span>
+                        <span class="stat">🔒 Zero data retention</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-section" class="section hidden">
+                <div class="loading-card">
+                    <div class="loading-animation">
+                        <div class="spinner"></div>
+                        <div class="loading-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <h3 id="loading-title">🔬 Analyzing Your Transactions...</h3>
+                    <p id="loading-subtitle">Our advanced AI is processing your transaction history with state-of-the-art algorithms.</p>
+                    <div class="loading-steps">
+                        <div class="step active" id="step-1">📡 Fetching blockchain data</div>
+                        <div class="step" id="step-2">🧠 AI pattern analysis</div>
+                        <div class="step" id="step-3">📊 Generating insights</div>
+                        <div class="step" id="step-4">✨ Finalizing report</div>
+                    </div>
+                    <div class="loading-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="transactions-count">0</span>
+                            <span class="stat-label">Transactions Analyzed</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="patterns-found">0</span>
+                            <span class="stat-label">Patterns Identified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results State -->
+            <div id="results-section" class="section hidden">
+                <div id="results-content">
+                    <!-- Results will be dynamically generated here -->
+                </div>
+            </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-section" class="section hidden">
+                <div class="error-card">
+                    <h3>❌ Analysis Failed</h3>
+                    <p id="error-message">An error occurred while analyzing your transactions.</p>
+                    <button id="retry-btn" class="primary-btn">Try Again</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FolioFlow</h4>
+                    <p>Next-generation Cardano portfolio analytics powered by advanced AI and machine learning algorithms.</p>
+                    <div class="social-links">
+                        <span class="social-link">🐦 Twitter</span>
+                        <span class="social-link">💬 Discord</span>
+                        <span class="social-link">📘 Documentation</span>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li>AI-Powered Analysis</li>
+                        <li>Real-Time Portfolio Tracking</li>
+                        <li>Tax Optimization</li>
+                        <li>Risk Assessment</li>
+                        <li>Pattern Recognition</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Security & Privacy</h4>
+                    <ul>
+                        <li>🔒 Bank-Grade Encryption</li>
+                        <li>🚫 Zero Data Retention</li>
+                        <li>🛡️ Non-Custodial</li>
+                        <li>🔐 Read-Only Access</li>
+                        <li>✅ Open Source</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Powered By</h4>
+                    <div class="tech-stack">
+                        <span class="tech-badge">Cardano</span>
+                        <span class="tech-badge">Azure OpenAI</span>
+                        <span class="tech-badge">Blockfrost</span>
+                        <span class="tech-badge">MeshJS</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FolioFlow. Built for the Cardano ecosystem with ❤️ and cutting-edge AI technology.</p>
+                <div class="version-info">
+                    <span>Version 1.0.0-beta</span> • 
+                    <span>Last Updated: September 2025</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Wallet Selection Modal -->
+    <div id="wallet-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Wallet</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="wallet-list" class="wallet-list">
+                    <!-- Wallet options will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=2"></script>
+    <!-- <script src="masumi-integration.js"></script> -->
+</body>
+</html>

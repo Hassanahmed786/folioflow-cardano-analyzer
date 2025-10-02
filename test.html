@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FolioFlow Test</title>
+</head>
+<body>
+    <h1>Quick Test</h1>
+    <button id="connectWalletBtn">Connect Wallet</button>
+    <div id="walletSection">
+        <p>Wallet section visible</p>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Test page loaded');
+            const btn = document.getElementById('connectWalletBtn');
+            const section = document.getElementById('walletSection');
+            
+            console.log('Button found:', !!btn);
+            console.log('Section found:', !!section);
+            
+            if (btn) {
+                btn.onclick = () => alert('Button clicked!');
+            }
+        });
+    </script>
+</body>
+</html>
