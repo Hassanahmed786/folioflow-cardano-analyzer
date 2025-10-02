@@ -241,14 +241,12 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 # Export the Flask app for Vercel
-app_instance = app
-
-def handler(event, context):
+def handler(request, response):
     """Vercel serverless function handler"""
-    return app_instance
+    return app
 
-# Default export for Vercel
-app = app_instance
+# Default export for Vercel (this is critical)
+application = app
 
 # For local development
 if __name__ == '__main__':
