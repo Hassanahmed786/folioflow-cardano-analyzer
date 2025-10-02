@@ -6,11 +6,6 @@ from datetime import datetime
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        # Enable CORS
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        
         try:
             # Read the request body
             content_length = int(self.headers.get('Content-Length', 0))
@@ -22,6 +17,9 @@ class handler(BaseHTTPRequestHandler):
             except json.JSONDecodeError:
                 self.send_response(400)
                 self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+                self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
                 self.end_headers()
                 response = {"error": "Invalid JSON data"}
                 self.wfile.write(json.dumps(response).encode())
@@ -51,12 +49,18 @@ class handler(BaseHTTPRequestHandler):
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             self.end_headers()
             self.wfile.write(json.dumps(analysis_result).encode())
             
         except Exception as e:
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             self.end_headers()
             response = {
                 "error": "Internal server error",
