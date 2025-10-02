@@ -31,11 +31,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "AZURE_OPENAI_API_KEY": "@azure_openai_api_key",
-    "AZURE_OPENAI_ENDPOINT": "@azure_openai_endpoint",
-    "AZURE_OPENAI_API_VERSION": "@azure_openai_api_version",
-    "AZURE_OPENAI_DEPLOYMENT_NAME": "@azure_openai_deployment_name"
-  }
+  ]
 }
